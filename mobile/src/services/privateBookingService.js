@@ -5,13 +5,15 @@ import API from "./api";
 /* ----------------------------- */
 
 export async function getAvailableBookings() {
-
-    const res = await API.get(
-        "/api/bookings/available"
-    );
-
-    return res.data.data;
-
+    try {
+        const res = await API.get(
+            "/api/bookings/available"
+        );
+        return res.data?.data ?? (Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+        console.warn("getAvailableBookings error:", err?.message);
+        return [];
+    }
 }
 
 /* ----------------------------- */
@@ -19,13 +21,15 @@ export async function getAvailableBookings() {
 /* ----------------------------- */
 
 export async function acceptBooking(id) {
-
-    const res = await API.put(
-        `/api/bookings/${id}/accept`
-    );
-
-    return res.data.data;
-
+    try {
+        const res = await API.put(
+            `/api/bookings/${id}/accept`
+        );
+        return res.data?.data ?? res.data;
+    } catch (err) {
+        console.warn("acceptBooking error:", err?.message);
+        throw err;
+    }
 }
 
 /* ----------------------------- */
@@ -33,13 +37,15 @@ export async function acceptBooking(id) {
 /* ----------------------------- */
 
 export async function declineBooking(id) {
-
-    const res = await API.put(
-        `/api/bookings/${id}/decline`
-    );
-
-    return res.data.data;
-
+    try {
+        const res = await API.put(
+            `/api/bookings/${id}/decline`
+        );
+        return res.data?.data ?? res.data;
+    } catch (err) {
+        console.warn("declineBooking error:", err?.message);
+        throw err;
+    }
 }
 
 /* ----------------------------- */
@@ -47,13 +53,15 @@ export async function declineBooking(id) {
 /* ----------------------------- */
 
 export async function arriveBooking(id) {
-
-    const res = await API.put(
-        `/api/bookings/${id}/arrive`
-    );
-
-    return res.data.data;
-
+    try {
+        const res = await API.put(
+            `/api/bookings/${id}/arrive`
+        );
+        return res.data?.data ?? res.data;
+    } catch (err) {
+        console.warn("arriveBooking error:", err?.message);
+        throw err;
+    }
 }
 
 /* ----------------------------- */
@@ -61,13 +69,15 @@ export async function arriveBooking(id) {
 /* ----------------------------- */
 
 export async function startBookingTrip(id) {
-
-    const res = await API.put(
-        `/api/bookings/${id}/start`
-    );
-
-    return res.data.data;
-
+    try {
+        const res = await API.put(
+            `/api/bookings/${id}/start`
+        );
+        return res.data?.data ?? res.data;
+    } catch (err) {
+        console.warn("startBookingTrip error:", err?.message);
+        throw err;
+    }
 }
 
 /* ----------------------------- */
@@ -75,21 +85,25 @@ export async function startBookingTrip(id) {
 /* ----------------------------- */
 
 export async function completeBooking(id) {
-
-    const res = await API.put(
-        `/api/bookings/${id}/complete`
-    );
-
-    return res.data.data;
-
+    try {
+        const res = await API.put(
+            `/api/bookings/${id}/complete`
+        );
+        return res.data?.data ?? res.data;
+    } catch (err) {
+        console.warn("completeBooking error:", err?.message);
+        throw err;
+    }
 }
+
 export async function getBookingHistory() {
-
-    const res = await API.get(
-        "/api/bookings/history"
-    );
-    console.log(res.data);
-
-    return res.data.data;
-
+    try {
+        const res = await API.get(
+            "/api/bookings/history"
+        );
+        return res.data?.data ?? (Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+        console.warn("getBookingHistory error:", err?.message);
+        return [];
+    }
 }

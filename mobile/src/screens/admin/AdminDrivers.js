@@ -45,17 +45,17 @@ export default function AdminDrivers() {
                 getPrivateDrivers(),
             ]);
 
-            const government =
-                (govRes.ambulances || []).map((d) => ({
-                    ...d,
-                    driverType: "government",
-                }));
+            const govList = Array.isArray(govRes?.ambulances) ? govRes.ambulances : (Array.isArray(govRes?.data) ? govRes.data : (Array.isArray(govRes) ? govRes : []));
+            const government = govList.map((d) => ({
+                ...d,
+                driverType: "government",
+            }));
 
-            const privateDrivers =
-                (privateRes.drivers || []).map((d) => ({
-                    ...d,
-                    driverType: "private",
-                }));
+            const privList = Array.isArray(privateRes?.drivers) ? privateRes.drivers : (Array.isArray(privateRes?.data) ? privateRes.data : (Array.isArray(privateRes) ? privateRes : []));
+            const privateDrivers = privList.map((d) => ({
+                ...d,
+                driverType: "private",
+            }));
 
             setDrivers([
                 ...government,

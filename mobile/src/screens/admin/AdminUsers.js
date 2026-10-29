@@ -24,7 +24,8 @@ export default function AdminUsers() {
             const res = await getUsers();
 
             if (res.success) {
-                const onlyUsers = (res.users || []).filter(
+                const uList = res.users || res.data || (Array.isArray(res) ? res : []);
+                const onlyUsers = (Array.isArray(uList) ? uList : []).filter(
                     (account) => account.role === "user"
                 );
 

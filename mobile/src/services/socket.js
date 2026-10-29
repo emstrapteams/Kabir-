@@ -3,7 +3,8 @@ import { API_URL } from "./api";
 
 const socket = io(API_URL, {
     autoConnect: false,
-    transports: ["websocket"],
+    transports: ["websocket", "polling"],
+    timeout: 15000,
     reconnection: true,
     reconnectionAttempts: Infinity,
     reconnectionDelay: 1000,

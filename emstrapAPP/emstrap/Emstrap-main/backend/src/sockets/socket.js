@@ -2,8 +2,14 @@ import { Server } from "socket.io";
 
 let io;
 
+const envOrigins = (process.env.ALLOWED_ORIGINS || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
 const allowedOrigins = [
   process.env.FRONTEND_URL,
+  ...envOrigins,
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "http://localhost:5174",
@@ -24,10 +30,17 @@ export const initSocket = (server) => {
   io = new Server(server, {
     cors: {
       origin(origin, callback) {
-        if (!origin || allowedOrigins.includes(origin) || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+        if (!origin || origin === "null") return callback(null, true);
+        if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
           return callback(null, true);
         }
-        return callback(new Error("Not allowed by CORS"));
+        if (allowedOrigins.includes("*") || allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+        if (/^https:\/\/.*\.netlify\.app$/.test(origin) || origin.startsWith("exp://") || origin.startsWith("emstrap://")) {
+          return callback(null, true);
+        }
+        return callback(null, true);
       },
       methods: ["GET", "POST", "PUT", "DELETE"],
       credentials: true

@@ -59,7 +59,7 @@ export default function PrivateDriverDashboardScreen() {
                 const pending =
                     await getPendingBookings();
 
-                setIncomingBookings(pending);
+                setIncomingBookings(Array.isArray(pending) ? pending : (pending?.data || []));
 
             } catch (err) {
 
@@ -116,7 +116,7 @@ export default function PrivateDriverDashboardScreen() {
                 const pending =
                     await getPendingBookings();
 
-                setIncomingBookings(pending);
+                setIncomingBookings(Array.isArray(pending) ? pending : (pending?.data || []));
 
             }
 

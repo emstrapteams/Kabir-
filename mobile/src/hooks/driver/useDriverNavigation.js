@@ -15,73 +15,82 @@ export default function useDriverNavigation(
 
     useEffect(() => {
         let subscription;
+        let mounted = true;
 
         async function startTracking() {
-            const permission =
-                await Location.requestForegroundPermissionsAsync();
+            try {
+                const permission =
+                    await Location.requestForegroundPermissionsAsync();
 
-            if (permission.status !== "granted") return;
+                if (permission.status !== "granted" || !mounted) return;
 
-            subscription =
-                await Location.watchPositionAsync(
-                    {
-                        accuracy: Location.Accuracy.High,
-                        distanceInterval: 5,
-                        timeInterval: 3000,
-                    },
-                    async (location) => {
-                        const current = {
-                            latitude: location.coords.latitude,
-                            longitude: location.coords.longitude,
-                        };
+                subscription =
+                    await Location.watchPositionAsync(
+                        {
+                            accuracy: Location.Accuracy.High,
+                            distanceInterval: 5,
+                            timeInterval: 3000,
+                        },
+                        async (location) => {
+                            if (!mounted) return;
 
-                        setDriverLocation(current);
+                            try {
+                                const current = {
+                                    latitude: location.coords.latitude,
+                                    longitude: location.coords.longitude,
+                                };
 
-                        // Send live location through socket
-                        if (socket.connected) {
-                            socket.emit("update_location", {
-                                requestId: emergency?._id,
-                                latitude: current.latitude,
-                                longitude: current.longitude,
-                            });
-                        }
+                                setDriverLocation(current);
 
-                        // DriverContext already updates the backend location,
-                        // so don't call updateDriverLocation() here again.
+                                // Send live location through socket
+                                if (socket.connected) {
+                                    socket.emit("update_location", {
+                                        requestId: emergency?._id,
+                                        latitude: current.latitude,
+                                        longitude: current.longitude,
+                                    });
+                                }
 
-                        // Calculate navigation route
-                        if (
-                            destination &&
-                            destination.latitude != null &&
-                            destination.longitude != null
-                        ) {
-                            const result =
-                                await getRoutePolyline(
-                                    current,
-                                    destination
-                                );
+                                // Calculate navigation route
+                                if (
+                                    destination &&
+                                    destination.latitude != null &&
+                                    destination.longitude != null
+                                ) {
+                                    const result =
+                                        await getRoutePolyline(
+                                            current,
+                                            destination
+                                        );
 
-                            if (result) {
-                                setRoute(
-                                    result.coordinates || []
-                                );
+                                    if (result && mounted) {
+                                        setRoute(
+                                            result.coordinates || []
+                                        );
 
-                                setDistance(
-                                    result.distanceKm ?? 0
-                                );
+                                        setDistance(
+                                            result.distanceKm ?? 0
+                                        );
 
-                                setDuration(
-                                    result.durationMin ?? 0
-                                );
+                                        setDuration(
+                                            result.durationMin ?? 0
+                                        );
+                                    }
+                                }
+                            } catch (locErr) {
+                                console.warn("Driver navigation update warning:", locErr?.message);
                             }
                         }
-                    }
-                );
+                    );
+            } catch (err) {
+                console.warn("Driver navigation tracking start warning:", err?.message);
+            }
         }
 
         startTracking();
 
         return () => {
+            mounted = false;
             subscription?.remove();
         };
     }, [emergency, destination]);

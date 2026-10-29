@@ -38,7 +38,7 @@ export default function DriverDashboardScreen() {
                 const pending =
                     await getPendingEmergencies();
 
-                setIncomingEmergencies(pending);
+                setIncomingEmergencies(Array.isArray(pending) ? pending : (pending?.data || []));
 
             } catch (err) {
 
@@ -76,7 +76,7 @@ export default function DriverDashboardScreen() {
                 const pending =
                     await getPendingEmergencies();
 
-                setIncomingEmergencies(pending);
+                setIncomingEmergencies(Array.isArray(pending) ? pending : (pending?.data || []));
 
             }
 

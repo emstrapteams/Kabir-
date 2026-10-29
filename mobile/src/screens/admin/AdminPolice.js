@@ -39,7 +39,8 @@ export default function AdminPolice() {
             const res = await getPolice();
 
             if (res.success) {
-                setPoliceRecords(res.police || []);
+                const pList = res.police || res.data || (Array.isArray(res) ? res : []);
+                setPoliceRecords(Array.isArray(pList) ? pList : []);
             }
 
         } catch (err) {

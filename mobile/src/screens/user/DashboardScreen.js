@@ -38,8 +38,10 @@ export default function DashboardScreen() {
                     API.get("/api/emergency"),
                 ]);
 
-            setBookings(bookingRes.data?.data || []);
-            setEmergencies(emergencyRes.data?.data || []);
+            const bList = bookingRes.data?.data || bookingRes.data?.bookings || (Array.isArray(bookingRes.data) ? bookingRes.data : []);
+            const eList = emergencyRes.data?.data || emergencyRes.data?.emergencies || (Array.isArray(emergencyRes.data) ? emergencyRes.data : []);
+            setBookings(Array.isArray(bList) ? bList : []);
+            setEmergencies(Array.isArray(eList) ? eList : []);
 
         } catch (err) {
             console.log(err);
@@ -51,12 +53,14 @@ export default function DashboardScreen() {
 
     const combined = useMemo(() => {
 
-        const bookingData = bookings.map((b) => ({
+        const safeBookings = Array.isArray(bookings) ? bookings : [];
+        const safeEmergencies = Array.isArray(emergencies) ? emergencies : [];
+        const bookingData = safeBookings.map((b) => ({
             ...b,
             type: "booking",
         }));
 
-        const emergencyData = emergencies.map((e) => ({
+        const emergencyData = safeEmergencies.map((e) => ({
             ...e,
             type: "emergency",
         }));

@@ -36,7 +36,8 @@ export default function AdminHospitals() {
             const res = await getHospitals();
 
             if (res.success) {
-                setHospitals(res.hospitals || []);
+                const hList = res.hospitals || res.data || (Array.isArray(res) ? res : []);
+                setHospitals(Array.isArray(hList) ? hList : []);
             }
         } catch (err) {
             Alert.alert(

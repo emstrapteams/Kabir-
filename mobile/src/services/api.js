@@ -2,10 +2,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import Constants from "expo-constants";
 
-export const API_URL =
+const rawApiUrl =
     process.env.EXPO_PUBLIC_API_URL ||
     Constants.expoConfig?.extra?.apiUrl ||
     "http://10.126.246.128:5000";
+
+export const API_URL = rawApiUrl.trim().replace(/\/+$/, "");
 const API = axios.create({
     baseURL: API_URL,
     withCredentials: true,

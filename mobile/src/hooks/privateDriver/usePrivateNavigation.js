@@ -8,121 +8,96 @@ export default function usePrivateNavigation(
     booking,
     destination
 ) {
-
-    const [driverLocation, setDriverLocation] =
-        useState(null);
-
-    const [route, setRoute] =
-        useState([]);
-
-    const [distance, setDistance] =
-        useState(0);
-
-    const [duration, setDuration] =
-        useState(0);
+    const [driverLocation, setDriverLocation] = useState(null);
+    const [route, setRoute] = useState([]);
+    const [distance, setDistance] = useState(0);
+    const [duration, setDuration] = useState(0);
 
     useEffect(() => {
-
         let subscription;
+        let mounted = true;
 
         async function startTracking() {
+            try {
+                const permission =
+                    await Location.requestForegroundPermissionsAsync();
 
-            const permission =
-                await Location.requestForegroundPermissionsAsync();
+                if (permission.status !== "granted" || !mounted) return;
 
-            if (permission.status !== "granted")
-                return;
+                subscription =
+                    await Location.watchPositionAsync(
+                        {
+                            accuracy: Location.Accuracy.High,
+                            distanceInterval: 5,
+                            timeInterval: 3000,
+                        },
+                        async (location) => {
+                            if (!mounted) return;
 
-            subscription =
-                await Location.watchPositionAsync(
+                            try {
+                                const current = {
+                                    latitude: location.coords.latitude,
+                                    longitude: location.coords.longitude,
+                                };
 
-                    {
-                        accuracy: Location.Accuracy.High,
-                        distanceInterval: 5,
-                        timeInterval: 3000,
-                    },
+                                setDriverLocation(current);
 
-                    async (location) => {
+                                // Send live location to booking socket
+                                if (socket.connected) {
+                                    socket.emit("update_location", {
+                                        requestId: booking?._id,
+                                        latitude: current.latitude,
+                                        longitude: current.longitude,
+                                    });
+                                }
 
-                        const current = {
+                                if (
+                                    destination &&
+                                    destination.latitude != null &&
+                                    destination.longitude != null
+                                ) {
+                                    const result =
+                                        await getRoutePolyline(
+                                            current,
+                                            destination
+                                        );
 
-                            latitude:
-                                location.coords.latitude,
+                                    if (result && mounted) {
+                                        setRoute(
+                                            result.coordinates || []
+                                        );
 
-                            longitude:
-                                location.coords.longitude,
+                                        setDistance(
+                                            result.distanceKm ?? 0
+                                        );
 
-                        };
-
-                        setDriverLocation(current);
-
-                        // Send live location to booking socket
-                        if (socket.connected) {
-
-                            socket.emit("update_location", {
-                                requestId: booking?._id,
-                                latitude: current.latitude,
-                                longitude: current.longitude,
-                            });
-
-                        }
-
-                        if (
-                            destination &&
-                            destination.latitude != null &&
-                            destination.longitude != null
-                        ) {
-
-                            const result =
-                                await getRoutePolyline(
-                                    current,
-                                    destination
-                                );
-
-                            if (result) {
-
-                                setRoute(
-                                    result.coordinates || []
-                                );
-
-                                setDistance(
-                                    result.distanceKm ?? 0
-                                );
-
-                                setDuration(
-                                    result.durationMin ?? 0
-                                );
-
+                                        setDuration(
+                                            result.durationMin ?? 0
+                                        );
+                                    }
+                                }
+                            } catch (locErr) {
+                                console.warn("Private driver navigation update warning:", locErr?.message);
                             }
-
                         }
-
-                    }
-
-                );
-
+                    );
+            } catch (err) {
+                console.warn("Private navigation startTracking warning:", err?.message);
+            }
         }
 
         startTracking();
 
         return () => {
-
+            mounted = false;
             subscription?.remove();
-
         };
-
     }, [booking, destination]);
 
     return {
-
         driverLocation,
-
         route,
-
         distance,
-
         duration,
-
     };
-
 }

@@ -7,12 +7,14 @@ export const connectBookingDB = async () => {
         return bookingConnection;
     }
 
-    if (!process.env.MONGO_URI_BOOKING) {
-        throw new Error("MONGO_URI_BOOKING is not configured");
+    const bookingUri = process.env.MONGO_URI_BOOKING || process.env.MONGO_URI;
+
+    if (!bookingUri) {
+        throw new Error("Neither MONGO_URI_BOOKING nor MONGO_URI is configured");
     }
 
     bookingConnection = await mongoose
-        .createConnection(process.env.MONGO_URI_BOOKING, {
+        .createConnection(bookingUri, {
             serverSelectionTimeoutMS: 10000,
         })
         .asPromise();

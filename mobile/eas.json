@@ -12,33 +12,24 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      },
-      "env": {
-        "EXPO_PUBLIC_API_URL": "http://10.126.246.128:5000"
       }
     },
     "preview-apk": {
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      },
-      "env": {
-        "EXPO_PUBLIC_API_URL": "http://10.126.246.128:5000"
       }
     },
     "local": {
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      },
-      "env": {
-        "EXPO_PUBLIC_API_URL": "http://10.126.246.128:5000"
       }
     },
     "production": {
       "autoIncrement": true,
-      "env": {
-        "EXPO_PUBLIC_API_URL": "http://10.126.246.128:5000"
+      "android": {
+        "buildType": "apk"
       }
     }
   },

@@ -5,22 +5,28 @@ import app from "./app.js";
 import http from "http";
 import { initSocket } from "./src/sockets/socket.js";
 import { ensureDefaultAdminUser } from "./src/utils/adminAuth.js";
+
 console.log("SERVER STARTED FROM:", import.meta.url);
-console.log("EMAIL_USER =", process.env.EMAIL_USER);
-console.log("EMAIL_PASS =", process.env.EMAIL_PASS);
-dns.setServers(["8.8.8.8", "1.1.1.1"]);
+console.log("NODE_ENV =", process.env.NODE_ENV || "development");
+console.log("EMAIL_USER =", process.env.EMAIL_USER ? process.env.EMAIL_USER : "(not set)");
+console.log("EMAIL_PASS =", process.env.EMAIL_PASS ? "********" : "(not set)");
+
+try {
+  dns.setServers(["8.8.8.8", "1.1.1.1"]);
+} catch (dnsErr) {
+  console.warn("Custom DNS servers could not be set:", dnsErr.message);
+}
 
 const server = http.createServer(app);
 initSocket(server);
 
-// ✅ Start from 5000 (not fixed 5001)
+// Bind to assigned port or default to 5000
 let PORT = Number(process.env.PORT) || 5000;
 
-// ✅ UPDATED ERROR HANDLER (NO CRASH)
 const handleServerError = (error) => {
-  if (error.code === "EADDRINUSE") {
+  if (error.code === "EADDRINUSE" && process.env.NODE_ENV !== "production") {
     console.warn(`⚠️ Port ${PORT} is busy. Trying ${PORT + 1}...`);
-    PORT++; // move to next port
+    PORT++;
     setTimeout(() => {
       server.listen(PORT);
     }, 1000);
@@ -37,7 +43,6 @@ const startServer = async () => {
     await connectDB();
     await ensureDefaultAdminUser();
 
-    // ✅ start server normally
     server.listen(PORT, () => {
       console.log(`✅ Server running on port ${PORT}`);
     });

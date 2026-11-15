@@ -11,7 +11,8 @@ const escapeRegex = (string = "") =>
 
 const findAccountByEmail = async (email) => {
     if (!email) return null;
-    const query = { email: { $regex: new RegExp(`^${escapeRegex(email)}$`, "i") } };
+    const regex = new RegExp(`^${escapeRegex(email)}$`, "i");
+    const query = { email: { $regex: regex } };
 
     let account = await User.findOne(query);
     if (account) return account;
@@ -32,6 +33,26 @@ const findAccountByEmail = async (email) => {
     const BookingDriver = getBookingDriverModel(bookingConnection);
 
     account = await BookingDriver.findOne(query);
+    if (account) return account;
+
+    // Fallback: If not found by email, allow matching by username/name
+    const nameQuery = { name: { $regex: regex } };
+    account = await User.findOne(nameQuery);
+    if (account) return account;
+
+    account = await Admin.findOne(nameQuery);
+    if (account) return account;
+
+    account = await Hospital.findOne(nameQuery);
+    if (account) return account;
+
+    account = await Police.findOne(nameQuery);
+    if (account) return account;
+
+    account = await Ambulance.findOne(nameQuery);
+    if (account) return account;
+
+    account = await BookingDriver.findOne(nameQuery);
     if (account) return account;
 
     return null;

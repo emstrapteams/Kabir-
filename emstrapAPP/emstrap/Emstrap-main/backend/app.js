@@ -43,7 +43,7 @@ app.use(cors({
     if (!origin || origin === "null") return callback(null, true);
 
     // Allow any localhost / local IP origin regardless of port
-    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+    if (/^https?:\/\/(localhost|127\.0\.0\.1|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})(:\d+)?$/.test(origin)) {
       return callback(null, true);
     }
 

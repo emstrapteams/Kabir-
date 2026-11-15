@@ -117,6 +117,7 @@ export default function RegisterScreen() {
 
                 <TextInput
                     placeholder="Full Name"
+                    placeholderTextColor="#9ca3af"
                     style={styles.input}
                     value={form.name}
                     onChangeText={(v) => update("name", v)}
@@ -124,6 +125,7 @@ export default function RegisterScreen() {
 
                 <TextInput
                     placeholder="Email"
+                    placeholderTextColor="#9ca3af"
                     style={styles.input}
                     autoCapitalize="none"
                     keyboardType="email-address"
@@ -135,6 +137,7 @@ export default function RegisterScreen() {
                     <Text style={styles.mobilePrefix}>+91</Text>
                     <TextInput
                         placeholder="Mobile Number"
+                        placeholderTextColor="#9ca3af"
                         style={styles.mobileInput}
                         keyboardType="number-pad"
                         maxLength={10}
@@ -146,6 +149,7 @@ export default function RegisterScreen() {
                 <View style={styles.passwordBox}>
                     <TextInput
                         placeholder="Password"
+                        placeholderTextColor="#9ca3af"
                         secureTextEntry={!showPassword}
                         style={styles.passwordInput}
                         value={form.password}
@@ -162,6 +166,7 @@ export default function RegisterScreen() {
 
                 <TextInput
                     placeholder="City"
+                    placeholderTextColor="#9ca3af"
                     style={styles.input}
                     value={form.city}
                     onChangeText={(v) => update("city", v)}
@@ -169,6 +174,7 @@ export default function RegisterScreen() {
 
                 <TextInput
                     placeholder="Address"
+                    placeholderTextColor="#9ca3af"
                     style={styles.input}
                     value={form.address}
                     onChangeText={(v) => update("address", v)}
@@ -214,6 +220,7 @@ export default function RegisterScreen() {
                 {form.role === "ambulance_driver" && (
                     <TextInput
                         placeholder="Vehicle Number (e.g. MH-12-AB-3456)"
+                        placeholderTextColor="#9ca3af"
                         style={styles.input}
                         autoCapitalize="characters"
                         value={form.vehicleNumber}

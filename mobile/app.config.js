@@ -1,6 +1,6 @@
 module.exports = ({ config }) => {
   const rawApiUrl =
-    process.env.EXPO_PUBLIC_API_URL || "http://10.126.246.128:5000";
+    process.env.EXPO_PUBLIC_API_URL || "http://10.112.162.128:5000";
   const apiUrl = rawApiUrl.trim().replace(/\/+$/, "");
 
   const googleMapsApiKey =

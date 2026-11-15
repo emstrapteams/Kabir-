@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
     View,
     Text,
@@ -7,49 +8,39 @@ import {
     StyleSheet,
     Alert,
     ActivityIndicator,
+    ScrollView,
+    KeyboardAvoidingView,
+    Platform,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import API from "../../config/api";
 
 export default function ResetPasswordScreen() {
-
     const router = useRouter();
     const { token } = useLocalSearchParams();
 
     const resetToken = Array.isArray(token) ? token[0] : token;
-    console.log("🔐 RESET TOKEN RECEIVED:", resetToken);
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
     const handleResetPassword = async () => {
-
         if (!password || !confirmPassword) {
-            Alert.alert(
-                "Error",
-                "Please enter both passwords."
-            );
+            Alert.alert("Error", "Please enter both passwords.");
             return;
         }
 
         if (password !== confirmPassword) {
-            Alert.alert(
-                "Error",
-                "Passwords do not match."
-            );
+            Alert.alert("Error", "Passwords do not match.");
             return;
         }
 
         try {
-
             setLoading(true);
 
-            await API.put(
-                `/auth/reset-password/${resetToken}`,
-                {
-                    password,
-                }
-            );
+            await API.put(`/auth/reset-password/${resetToken}`, {
+                password,
+            });
 
             Alert.alert(
                 "Password Reset",
@@ -57,96 +48,91 @@ export default function ResetPasswordScreen() {
                 [
                     {
                         text: "Login",
-                        onPress: () =>
-                            router.replace("/login"),
+                        onPress: () => router.replace("/login"),
                     },
                 ]
             );
-
         } catch (error) {
-
             console.log(
                 "RESET PASSWORD ERROR:",
-                error.response?.data ||
-                error.message
+                error.response?.data || error.message
             );
 
             Alert.alert(
                 "Reset Failed",
                 error.response?.data?.message ||
-                "The reset link is invalid or expired."
+                    "The reset link is invalid or expired."
             );
-
         } finally {
-
             setLoading(false);
-
         }
-
     };
 
     return (
-
-        <View style={styles.container}>
-
-            <Text style={styles.title}>
-                Reset Password
-            </Text>
-
-            <Text style={styles.subtitle}>
-                Enter your new password below.
-            </Text>
-
-            <TextInput
-                style={styles.input}
-                placeholder="New Password"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-                autoCapitalize="none"
-            />
-
-            <TextInput
-                style={styles.input}
-                placeholder="Confirm New Password"
-                secureTextEntry
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                autoCapitalize="none"
-            />
-
-            <TouchableOpacity
-                style={styles.button}
-                onPress={handleResetPassword}
-                disabled={loading}
+        <SafeAreaView style={styles.safeArea}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === "ios" ? "padding" : undefined}
+                enabled={Platform.OS === "ios"}
             >
+                <ScrollView
+                    contentContainerStyle={styles.scrollContent}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
+                    <Text style={styles.title}>Reset Password</Text>
+                    <Text style={styles.subtitle}>Enter your new password below.</Text>
 
-                {loading ? (
+                    <TextInput
+                        style={styles.input}
+                        placeholder="New Password"
+                        placeholderTextColor="#9ca3af"
+                        secureTextEntry
+                        value={password}
+                        onChangeText={setPassword}
+                        autoCapitalize="none"
+                        underlineColorAndroid="transparent"
+                    />
 
-                    <ActivityIndicator color="#FFFFFF" />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Confirm New Password"
+                        placeholderTextColor="#9ca3af"
+                        secureTextEntry
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                        autoCapitalize="none"
+                        underlineColorAndroid="transparent"
+                    />
 
-                ) : (
-
-                    <Text style={styles.buttonText}>
-                        Reset Password
-                    </Text>
-
-                )}
-
-            </TouchableOpacity>
-
-        </View>
-
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={handleResetPassword}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <ActivityIndicator color="#FFFFFF" />
+                        ) : (
+                            <Text style={styles.buttonText}>Reset Password</Text>
+                        )}
+                    </TouchableOpacity>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-
-    container: {
+    safeArea: {
         flex: 1,
-        justifyContent: "center",
-        padding: 24,
         backgroundColor: "#F8FAFC",
+    },
+
+    scrollContent: {
+        flexGrow: 1,
+        paddingHorizontal: 24,
+        paddingTop: 48,
+        paddingBottom: 40,
     },
 
     title: {
@@ -164,13 +150,14 @@ const styles = StyleSheet.create({
 
     input: {
         backgroundColor: "#FFFFFF",
-        borderWidth: 1,
+        borderWidth: 1.5,
         borderColor: "#D1D5DB",
         borderRadius: 12,
         paddingHorizontal: 15,
-        paddingVertical: 14,
+        height: 52,
         marginBottom: 14,
         fontSize: 16,
+        color: "#111827",
     },
 
     button: {
@@ -186,5 +173,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "700",
     },
-
 });

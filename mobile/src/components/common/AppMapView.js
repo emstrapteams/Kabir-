@@ -46,7 +46,7 @@ const AppMapView = forwardRef(function AppMapView(
         >
             {!HAS_GOOGLE_KEY && (
                 <UrlTile
-                    urlTemplate="https://tile.openstreetmap.de/{z}/{x}/{y}.png"
+                    urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
                     maximumZ={19}
                     flipY={false}
                     zIndex={-1}

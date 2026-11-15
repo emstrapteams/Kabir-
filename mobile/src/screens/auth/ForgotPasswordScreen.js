@@ -8,6 +8,9 @@ import {
     StyleSheet,
     Alert,
     ActivityIndicator,
+    ScrollView,
+    KeyboardAvoidingView,
+    Platform,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -67,41 +70,60 @@ export default function ForgotPasswordScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.content}>
-                <Text style={styles.title}>Reset Password</Text>
-                <Text style={styles.subtitle}>
-                    Enter your email address to receive a secure password reset link.
-                </Text>
-
-                <TextInput
-                    placeholder="name@email.com"
-                    style={styles.input}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    value={email}
-                    onChangeText={setEmail}
-                    autoFocus
-                />
-
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={handleForgotPassword}
-                    disabled={loading}
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === "ios" ? "padding" : undefined}
+                enabled={Platform.OS === "ios"}
+            >
+                <ScrollView
+                    contentContainerStyle={styles.scrollContent}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
                 >
-                    {loading ? (
-                        <ActivityIndicator color="#fff" />
-                    ) : (
-                        <Text style={styles.buttonText}>Send Reset Link</Text>
-                    )}
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => router.back()}
+                        style={styles.backButton}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                        <Ionicons name="arrow-back" size={24} color="#374151" />
+                    </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => router.replace("/login")}>
-                    <Text style={styles.loginLink}>
-                        Remember your password?
-                        <Text style={{ color: "#dc2626" }}> Log in</Text>
+                    <Text style={styles.title}>Reset Password</Text>
+                    <Text style={styles.subtitle}>
+                        Enter your email address to receive a secure password reset link.
                     </Text>
-                </TouchableOpacity>
-            </View>
+
+                    <TextInput
+                        placeholder="Enter your registered email address"
+                        placeholderTextColor="#9ca3af"
+                        style={styles.input}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        value={email}
+                        onChangeText={setEmail}
+                        underlineColorAndroid="transparent"
+                    />
+
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={handleForgotPassword}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <ActivityIndicator color="#fff" />
+                        ) : (
+                            <Text style={styles.buttonText}>Send Reset Link</Text>
+                        )}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => router.replace("/login")}>
+                        <Text style={styles.loginLink}>
+                            Remember your password?
+                            <Text style={{ color: "#dc2626", fontWeight: "700" }}> Log in</Text>
+                        </Text>
+                    </TouchableOpacity>
+                </ScrollView>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }
@@ -112,10 +134,16 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
     },
 
-    content: {
-        flex: 1,
-        justifyContent: "center",
+    scrollContent: {
+        flexGrow: 1,
         paddingHorizontal: 28,
+        paddingTop: 36,
+        paddingBottom: 40,
+    },
+
+    backButton: {
+        marginBottom: 20,
+        alignSelf: "flex-start",
     },
 
     title: {
@@ -123,6 +151,7 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         textAlign: "center",
         marginBottom: 10,
+        color: "#111827",
     },
 
     subtitle: {
@@ -134,13 +163,15 @@ const styles = StyleSheet.create({
     },
 
     input: {
-        borderWidth: 1,
-        borderColor: "#ddd",
+        borderWidth: 1.5,
+        borderColor: "#e5e7eb",
         borderRadius: 14,
         paddingHorizontal: 18,
         height: 55,
         marginBottom: 22,
         fontSize: 16,
+        backgroundColor: "#f9fafb",
+        color: "#111827",
     },
 
     button: {

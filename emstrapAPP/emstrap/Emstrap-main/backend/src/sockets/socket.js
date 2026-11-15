@@ -31,7 +31,7 @@ export const initSocket = (server) => {
     cors: {
       origin(origin, callback) {
         if (!origin || origin === "null") return callback(null, true);
-        if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+        if (/^https?:\/\/(localhost|127\.0\.0\.1|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})(:\d+)?$/.test(origin)) {
           return callback(null, true);
         }
         if (allowedOrigins.includes("*") || allowedOrigins.includes(origin)) {
@@ -97,10 +97,12 @@ export const initSocket = (server) => {
     // Ambulance sends live location
     socket.on("update_location", async (data) => {
       // 1. ALWAYS broadcast in real-time (fast, no DB load)
-      if (data.requestId) {
+      if (data && data.requestId) {
+        const lat = data.lat ?? data.latitude;
+        const lng = data.lng ?? data.longitude;
         activeDriverLocations.set(data.requestId.toString(), {
-          lat: data.lat || data.latitude,
-          lng: data.lng || data.longitude
+          lat,
+          lng,
         });
         io.to(`request_${data.requestId}`).emit("ambulance_location", data);
 
@@ -110,7 +112,7 @@ export const initSocket = (server) => {
           const now = Date.now();
           const lastUpdate = lastUpdateMap.get(`driver_${data.requestId}`) || 0;
 
-          if (now - lastUpdate > 5000) { // 5 seconds throttle
+          if (now - lastUpdate > 5000 && lat != null && lng != null) { // 5 seconds throttle
             lastUpdateMap.set(`driver_${data.requestId}`, now);
             const EmergencyRequest =
               (await import("../models/emergencyRequest.model.js")).default;
@@ -137,8 +139,8 @@ export const initSocket = (server) => {
                 request.ambulance,
                 {
                   currentLocation: {
-                    latitude: data.lat,
-                    longitude: data.lng,
+                    latitude: lat,
+                    longitude: lng,
                   },
                 }
               );
@@ -168,8 +170,8 @@ export const initSocket = (server) => {
                   booking.ambulance,
                   {
                     currentLocation: {
-                      latitude: data.lat,
-                      longitude: data.lng,
+                      latitude: lat,
+                      longitude: lng,
                     },
                   }
                 );
@@ -188,10 +190,12 @@ export const initSocket = (server) => {
     // User sends live location
     socket.on("update_user_location", async (data) => {
       // 1. ALWAYS broadcast in real-time
-      if (data.requestId) {
+      if (data && data.requestId) {
+        const lat = data.lat ?? data.latitude;
+        const lng = data.lng ?? data.longitude;
         activePatientLocations.set(data.requestId.toString(), {
-          lat: data.lat || data.latitude,
-          lng: data.lng || data.longitude
+          lat,
+          lng,
         });
         io.to(`request_${data.requestId}`).emit("user_location", data);
 
@@ -201,13 +205,13 @@ export const initSocket = (server) => {
           const now = Date.now();
           const lastUpdate = lastUpdateMap.get(`user_${data.requestId}`) || 0;
 
-          if (now - lastUpdate > 5000) {
+          if (now - lastUpdate > 5000 && lat != null && lng != null) {
             lastUpdateMap.set(`user_${data.requestId}`, now);
             const EmergencyRequest = (await import("../models/emergencyRequest.model.js")).default;
             await EmergencyRequest.findByIdAndUpdate(data.requestId, {
               location: {
-                latitude: data.latitude,
-                longitude: data.longitude
+                latitude: lat,
+                longitude: lng
               }
             });
           }

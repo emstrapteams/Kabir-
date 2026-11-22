@@ -57,6 +57,7 @@
     "plugins": [
       "./plugins/withCleartextTraffic",
       "expo-router",
+      "expo-asset",
       [
         "expo-splash-screen",
         {

@@ -5,7 +5,7 @@ import Constants from "expo-constants";
 const rawApiUrl =
     process.env.EXPO_PUBLIC_API_URL ||
     Constants.expoConfig?.extra?.apiUrl ||
-    "http://10.112.162.128:5000";
+    "http://172.28.70.128:5000";
 
 const API_URL = rawApiUrl.trim().replace(/\/+$/, "");
 

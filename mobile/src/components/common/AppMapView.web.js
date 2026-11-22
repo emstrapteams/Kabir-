@@ -7,6 +7,7 @@ export const UrlTile = () => null;
 export const Callout = ({ children, style }) => <View style={style}>{children}</View>;
 export const Circle = () => null;
 export const Polygon = () => null;
+export const Heatmap = () => null;
 export const PROVIDER_GOOGLE = "google";
 export const PROVIDER_DEFAULT = "default";
 

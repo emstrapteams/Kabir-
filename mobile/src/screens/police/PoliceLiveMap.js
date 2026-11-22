@@ -14,6 +14,7 @@ import {
 } from "react-native";
 
 import AppMapView, {
+    Heatmap,
     Marker,
 } from "../../components/common/AppMapView";
 

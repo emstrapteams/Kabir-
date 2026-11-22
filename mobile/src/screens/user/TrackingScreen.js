@@ -182,7 +182,9 @@ export default function TrackingScreen() {
     function connectSocket() {
 
         socketRef.current = io(SOCKET_URL, {
-            transports: ["websocket"],
+            transports: ["websocket", "polling"],
+            reconnection: true,
+            timeout: 60000,
         });
 
         socketRef.current.emit("track_request", {

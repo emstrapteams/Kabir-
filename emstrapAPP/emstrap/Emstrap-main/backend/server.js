@@ -11,10 +11,12 @@ console.log("NODE_ENV =", process.env.NODE_ENV || "development");
 console.log("EMAIL_USER =", process.env.EMAIL_USER ? process.env.EMAIL_USER : "(not set)");
 console.log("EMAIL_PASS =", process.env.EMAIL_PASS ? "********" : "(not set)");
 
-try {
-  dns.setServers(["8.8.8.8", "1.1.1.1"]);
-} catch (dnsErr) {
-  console.warn("Custom DNS servers could not be set:", dnsErr.message);
+if (process.env.NODE_ENV !== "production" || process.env.USE_CUSTOM_DNS === "true") {
+  try {
+    dns.setServers(["8.8.8.8", "1.1.1.1"]);
+  } catch (dnsErr) {
+    console.warn("Custom DNS servers could not be set:", dnsErr.message);
+  }
 }
 
 const server = http.createServer(app);

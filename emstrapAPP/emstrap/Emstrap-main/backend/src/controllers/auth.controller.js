@@ -625,11 +625,15 @@ export const forgotPassword = async (req, res) => {
       process.env.FRONTEND_URL ||
       "http://localhost:5173";
 
-    const mobileUrl = "exp://192.168.1.7:8081";
+    const mobileScheme = (process.env.MOBILE_APP_URL || "emstrap://").trim();
 
     const resetUrl =
       platform === "mobile"
-        ? `${mobileUrl}/--/reset-password/${resetToken}`
+        ? mobileScheme.startsWith("exp://")
+          ? `${mobileScheme.replace(/\/+$/, "")}/--/reset-password/${resetToken}`
+          : mobileScheme.endsWith("://")
+            ? `${mobileScheme}reset-password/${resetToken}`
+            : `${mobileScheme.replace(/\/+$/, "")}/reset-password/${resetToken}`
         : `${frontendUrl}/reset-password/${resetToken}`;
 
     const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;

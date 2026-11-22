@@ -18,6 +18,7 @@ import driverRoutes from "./src/routes/driver.route.js";
 import patientRoutes from "./src/routes/patient.route.js";
 
 const app = express();
+app.set("trust proxy", 1);
 
 const envOrigins = (process.env.ALLOWED_ORIGINS || "")
   .split(",")

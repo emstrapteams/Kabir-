@@ -11,7 +11,7 @@ export const API_URL = rawApiUrl.trim().replace(/\/+$/, "");
 const API = axios.create({
     baseURL: API_URL,
     withCredentials: true,
-    timeout: 15000,
+    timeout: 60000,
 });
 
 API.interceptors.request.use(async (config) => {

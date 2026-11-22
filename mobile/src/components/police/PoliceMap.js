@@ -166,8 +166,8 @@ export default function PoliceMap({
             reconnection: true,
             reconnectionAttempts: 10,
             reconnectionDelay: 1000,
-            timeout: 20000,
-            transports: ["websocket"],
+            timeout: 60000,
+            transports: ["websocket", "polling"],
         });
 
         socketRef.current = socket;

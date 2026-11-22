@@ -1,4 +1,41 @@
 import API from "./api";
+import socket from "./socket";
+
+let hospitalConnectHandler = null;
+
+export const getSocket = () => socket;
+
+export const connectHospitalSocket = (hospitalId) => {
+    if (hospitalConnectHandler) {
+        socket.off("connect", hospitalConnectHandler);
+    }
+
+    hospitalConnectHandler = () => {
+        if (hospitalId) {
+            socket.emit("join_hospital", { hospitalId });
+        }
+    };
+
+    socket.on("connect", hospitalConnectHandler);
+
+    if (!socket.connected) {
+        socket.connect();
+    } else {
+        hospitalConnectHandler();
+    }
+
+    return socket;
+};
+
+export const disconnectSocket = () => {
+    if (hospitalConnectHandler) {
+        socket.off("connect", hospitalConnectHandler);
+        hospitalConnectHandler = null;
+    }
+    if (socket.connected) {
+        socket.disconnect();
+    }
+};
 
 export const precheckEmergency = async (data) => {
     const res = await API.post(
